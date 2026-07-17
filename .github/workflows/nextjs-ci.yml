@@ -13,7 +13,7 @@ on:
 
 jobs:
   build:
-    name: Build Next.js Application
+    name: Build and Analyze Next.js Application
 
     runs-on: ubuntu-latest
 
@@ -37,6 +37,19 @@ jobs:
 
       - name: Build Application
         run: npm run build
+
+      - name: Install Sonar Scanner
+        run: npm install -g @sonar/scan
+
+      - name: SonarQube Scan
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        run: |
+          sonar \
+            -D "sonar.host.url=${SONAR_HOST_URL}" \
+            -D "sonar.token=${SONAR_TOKEN}" \
+            -D "sonar.projectKey=gocart"
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
