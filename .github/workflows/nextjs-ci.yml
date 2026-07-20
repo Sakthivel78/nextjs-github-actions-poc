@@ -15,7 +15,7 @@ jobs:
   build:
     name: Build and Analyze Next.js Application
 
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
       - name: Checkout Repository
