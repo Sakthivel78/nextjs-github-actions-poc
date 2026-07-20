@@ -28,18 +28,30 @@ jobs:
           cache: npm
 
       - name: Display Node Version
+        shell: powershell
         run: |
           node -v
           npm -v
 
       - name: Install Dependencies
+        shell: powershell
         run: npm install
 
       - name: Build Application
+        shell: powershell
         run: npm run build
 
       - name: Install Sonar Scanner
+        shell: powershell
         run: npm install -g @sonar/scan
+
+      - name: Verify SonarQube URL
+        shell: powershell
+        env:
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        run: |
+          Write-Host "SONAR_HOST_URL = $env:SONAR_HOST_URL"
+          Invoke-WebRequest "$env:SONAR_HOST_URL/api/server/version"
 
       - name: SonarQube Scan
         shell: powershell
