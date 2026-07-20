@@ -45,13 +45,22 @@ jobs:
         shell: powershell
         run: npm install -g @sonar/scan
 
-      - name: Verify SonarQube URL
+      - name: Verify SonarQube Configuration
         shell: powershell
         env:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: |
-          Write-Host "SONAR_HOST_URL = $env:SONAR_HOST_URL"
-          Invoke-WebRequest "$env:SONAR_HOST_URL/api/server/version"
+          if ([string]::IsNullOrWhiteSpace($env:SONAR_HOST_URL)) {
+            Write-Error "SONAR_HOST_URL secret is empty or missing."
+            exit 1
+          }
+
+          Write-Host "SONAR_HOST_URL length: $($env:SONAR_HOST_URL.Length)"
+          Write-Host "Checking SonarQube..."
+
+          Invoke-WebRequest `
+            -Uri "$env:SONAR_HOST_URL/api/server/version" `
+            -UseBasicParsing
 
       - name: SonarQube Scan
         shell: powershell
